@@ -1,0 +1,28 @@
+task sendApkViaEmail {
+    def apkFile = "${buildDir}/outputs/apk/free/debug/app-free-debug.apk"
+    def recipientEmail = "recipient@example.com"
+    def senderEmail = "sender@example.com"
+    def smtpHost = "smtp.example.com"
+    def smtpPort = 587
+    def smtpUsername = "smtp_username"
+    def smtpPassword = "smtp_password"
+
+    doLast {
+        ant.mail(
+                to: recipientEmail,
+                from: senderEmail,
+                subject: "APK file",
+                message: "Please find attached the APK file.",
+                mailhost: "${smtpHost}:${smtpPort}",
+                user: smtpUsername,
+                password: smtpPassword
+        ) {
+            File apk = new File(apkFile)
+            if (apk.exists()) {
+                attach(file: apkFile)
+            } else {
+                throw new GradleException("APK file not found at ${apkFile}")
+            }
+        }
+    }
+}
